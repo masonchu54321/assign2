@@ -1,15 +1,199 @@
-//You should implement your assign2 here.
+//object pic
+PImage hpImage, fighterImage, enemyImage, treasureImage;
+
+//background pic
+PImage start1Image, start2Image, bg1Image, bg2Image, end1Image, end2Image;
+
+//position var
+int x_fighter, y_fighter, x_hpRect,x_treasure, y_treasure, x_enemy, y_enemy, x_bg1, x_bg2;
+
+//pressed
+boolean upPressed = false;
+boolean downPressed = false;
+boolean leftPressed = false;
+boolean rightPressed = false;
+
+//state
+final int STATE_START = 0, STATE_PLAYING = 1, STATE_END = 2;
+int state = STATE_START;
+
+//
+int speed_fighter = 2;
+final int full_hp = 206;
+
+
+//pic properties
+final int height_trease = 41, width_trease = 41;
+final int height_fighter = 51, width_fighter = 51;
+final int height_enemy = 61, width_enemy = 61;
 
 void setup () {
-  size(640, 480) ;
+  size(640,480) ;
+  
+  //input pic
+  hpImage = loadImage("img/hp.png");
+  fighterImage = loadImage("img/fighter.png");
+  enemyImage = loadImage("img/enemy.png");
+  treasureImage = loadImage("img/treasure.png");
+  bg1Image = loadImage("img/bg1.png");
+  bg2Image = loadImage("img/bg2.png");
+  start1Image = loadImage("img/start1.png");
+  start2Image = loadImage("img/start2.png");
+  end1Image = loadImage("img/end1.png");
+  end2Image = loadImage("img/end2.png");
+  
+  //position var
+  x_fighter = 590;
+  y_fighter = 243;
+  x_hpRect = 46;
+  x_treasure = floor(random(150,580));
+  y_treasure = floor(random(35,435));
+  x_enemy =0;
+  y_enemy = floor(random(35,417));
+  rectMode(CORNERS);
+  x_bg1 = 0;
+  
 }
 
 void draw() {
-
+  switch(state){
+    case STATE_START:
+      image(start1Image,0,0);
+      if(mouseX >= 205 && mouseX <= 455) {
+        if(mouseY >= 374 && mouseY <= 415) {
+          if(mousePressed) {
+            state = STATE_PLAYING;
+          } else {
+            image(start2Image,0,0);
+          }
+        }
+      }
+      break;    
+    case STATE_PLAYING:
+      //background
+      image(bg1Image,x_bg1 % (width*2) -width,0);
+      image(bg2Image,(x_bg1+width) % (width*2) -width,0);
+      x_bg1 += 1;
+      
+      //hp
+      rect(5,3,x_hpRect,25);
+      fill(255,0,0);
+      image(hpImage,0,0);
+      
+      //fighter
+      image(fighterImage, x_fighter, y_fighter);
+      image(treasureImage, x_treasure, y_treasure);
+      x_enemy +=3;
+      image(enemyImage,x_enemy,y_enemy);
+      if(x_enemy >= width) {
+        x_enemy = 0;
+        y_enemy = floor(random(35,417));
+      }
+      
+      if(y_enemy + height_enemy/2 < y_fighter + height_fighter/2) {
+        y_enemy += 1;
+      }
+      if(y_enemy + height_enemy/2 > y_fighter + height_fighter/2) {
+        y_enemy -= 1;
+      }
+      
+      //fighter control
+      if(upPressed) {y_fighter -= speed_fighter;}
+      if(downPressed) {y_fighter += speed_fighter;}
+      if(rightPressed) {x_fighter += speed_fighter;}
+      if(leftPressed) {x_fighter -= speed_fighter;}
+      
+      // fighter boundary
+      if(y_fighter <= 2) {
+        y_fighter = 2;
+      }
+      if (y_fighter >= height-52) {
+        y_fighter = height-52;
+      }
+      if(x_fighter <= 2) {
+        x_fighter = 2;
+      }
+      if(x_fighter >= width-52) {
+        x_fighter = width-52;
+      }
+      
+      //get tresure
+      if(x_fighter <= x_treasure + width_trease && x_fighter +width_fighter >= x_treasure) {
+        if(y_fighter + height_fighter/2 >= y_treasure && y_fighter + height_fighter/2 <= y_treasure + height_trease) {
+          x_treasure = floor(random(150,580));
+          y_treasure = floor(random(35,435));
+          if(x_hpRect < full_hp) {
+            x_hpRect += 20;
+          }
+        }
+      }
+      
+      //crush 
+      if(x_fighter <= x_enemy + width_enemy && x_fighter +width_fighter >= x_enemy) {
+        if(y_fighter + height_fighter/2 >= y_enemy && y_fighter + height_fighter/2 <= y_enemy + height_enemy) {
+          x_enemy =0;
+          y_enemy = floor(random(35,417));
+          if(x_hpRect > 6) {
+            x_hpRect -= 40;
+          }
+        }
+      }
+      
+      if(x_hpRect <= 6) {
+        state = STATE_END;
+      }
+      break;
+    case STATE_END:
+      image(end1Image,0,0);
+      if(mouseX >= 205 && mouseX <= 438) {
+        if(mouseY >= 306 && mouseY <= 349) {
+          if(mousePressed) {
+            state = STATE_START;
+            x_hpRect = 46;
+            x_fighter = 590;
+            y_fighter = 243;
+          } else {
+            image(end2Image,0,0);
+          }
+        }
+      }
+      break;
+  }
 }
 void keyPressed(){
-
+  if(key == CODED) {
+    switch (keyCode) {
+      case UP:
+        upPressed = true;
+        break;
+      case DOWN:
+        downPressed = true;
+        break;
+      case RIGHT:
+        rightPressed = true;
+        break;
+      case LEFT:
+        leftPressed = true;
+        break;
+    }
+  }
 }
 void keyReleased(){
+  if(key == CODED) {
+    switch (keyCode) {
+      case UP:
+        upPressed = false;
+        break;
+      case DOWN:
+        downPressed = false;
+        break;
+      case RIGHT:
+        rightPressed = false;
+        break;
+      case LEFT:
+        leftPressed = false;
+        break;
+    }
+  }
 
 }

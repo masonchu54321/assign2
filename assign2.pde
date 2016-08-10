@@ -58,13 +58,13 @@ void setup () {
 void draw() {
   switch(state){
     case STATE_START:
-      image(start1Image,0,0);
+      image(start2Image,0,0);
       if(mouseX >= 205 && mouseX <= 455) {
         if(mouseY >= 374 && mouseY <= 415) {
           if(mousePressed) {
             state = STATE_PLAYING;
           } else {
-            image(start2Image,0,0);
+            image(start1Image,0,0);
           }
         }
       }
@@ -119,7 +119,7 @@ void draw() {
       
       //get tresure
       if(x_fighter <= x_treasure + width_trease && x_fighter +width_fighter >= x_treasure) {
-        if(y_fighter + height_fighter/2 >= y_treasure && y_fighter + height_fighter/2 <= y_treasure + height_trease) {
+        if(y_fighter + height_fighter >= y_treasure && y_fighter <= y_treasure + height_fighter) {
           x_treasure = floor(random(150,580));
           y_treasure = floor(random(35,435));
           if(x_hpRect < full_hp) {
@@ -144,7 +144,7 @@ void draw() {
       }
       break;
     case STATE_END:
-      image(end1Image,0,0);
+      image(end2Image,0,0);
       if(mouseX >= 205 && mouseX <= 438) {
         if(mouseY >= 306 && mouseY <= 349) {
           if(mousePressed) {
@@ -153,7 +153,7 @@ void draw() {
             x_fighter = 590;
             y_fighter = 243;
           } else {
-            image(end2Image,0,0);
+            image(end1Image,0,0);
           }
         }
       }
